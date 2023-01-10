@@ -51,6 +51,8 @@ public class ApplicationConfig implements ServletContextListener {
 	}
 
 	private void registerMessagesKeywordResolver(FacesContext context) {
+		if(context == null) return;
+		if(context.getApplication() == null) return;
 		context.getApplication().addSearchKeywordResolver(new MessagesKeywordResolver());
 	}
 
@@ -59,12 +61,15 @@ public class ApplicationConfig implements ServletContextListener {
 			.getServletRegistrations().values().stream()
 			.filter(servlet -> servlet.getClassName().equals(FacesServlet.class.getName()))
 			.findAny()
-			.ifPresent(facesServlet -> facesContext
+			.ifPresent(facesServlet -> {
+				if(facesContext == null) return;
+				if(facesContext.getApplication() == null) return;
+				facesContext
 				.getApplication()
 				.getViewHandler()
 				.getViews(facesContext, "/", ViewVisitOption.RETURN_AS_MINIMAL_IMPLICIT_OUTCOME)
-				.forEach(view -> facesServlet.addMapping(view))
-		);
+				.forEach(view -> facesServlet.addMapping(view));
+			});
 	}
 
 	private void createTestProducts() {
