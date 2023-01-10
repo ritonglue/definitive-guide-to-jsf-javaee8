@@ -1,10 +1,16 @@
 package com.example.project.view;
 
 import java.io.Serializable;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.push.Push;
+import javax.faces.push.PushContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.security.enterprise.SecurityContext;
@@ -25,9 +31,26 @@ public class ActiveUser implements Serializable {
 	private Map<String, Boolean> canView = new ConcurrentHashMap<>();
 
 	private User activeUser;
+	private Instant start;
 
 	@Inject
 	private SecurityContext securityContext;
+
+	@Inject @Push
+	private PushContext exit;
+
+	@PostConstruct
+	private void init() {
+		start = Instant.now();
+		exit.send("bla");
+	}
+
+	@PreDestroy
+	private void destroy() {
+		Instant end = Instant.now();
+		Duration duration = Duration.between(start, end);
+		System.out.println("duration user: " + duration.getSeconds());
+	}
 
 	public User get() { // For use in backing beans.
 		if (activeUser == null) {
