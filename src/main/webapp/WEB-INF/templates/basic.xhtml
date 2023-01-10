@@ -11,6 +11,18 @@
 
 	<h:head>
 		<title>#{view.viewId}</title>
+		<script>
+		function onClose(code, channel, event) {
+			console.log('Client onClose listener: code: ' + code + ', channel:' + channel + ", event:" + event);
+			if(code == 1000) {
+				alert("Session has expired!");
+				console.log("Session has expired!");
+			}
+		}
+		function onOpen(channel) {
+			console.log('Client onOpen listener:  channel:' + channel);
+		}
+		</script>
 	</h:head>
 
 	<h:body>
@@ -25,5 +37,6 @@
 			<ui:insert name="content" />
 			<h:messages id="globalMessages" globalOnly="true" />
 		</main>
+		<f:websocket channel="exit" onclose="onClose" onopen="onOpen" scope="session" />
 	</h:body>
 </html>

@@ -13,6 +13,18 @@
 		<h:head>
 			<title>#{text[page += '.title']}</title>
 			<meta name="description" content="#{text[page += '.meta.description']}" />
+			<script>
+			function onClose(code, channel, event) {
+				console.log('Client onClose listener: code: ' + code + ', channel:' + channel + ", event:" + event);
+				if(code == 1000) {
+					alert("Session has expired!");
+					console.log("Session has expired!");
+				}
+			}
+			function onOpen(channel) {
+				console.log('Client onOpen listener:  channel:' + channel);
+			}
+			</script>
 		</h:head>
 		<h:body id="#{page}">
 			<header>
@@ -44,6 +56,7 @@
 				<ui:insert name="content" />
 			</main>
 			<footer>© #{text['page_home.title']}</footer>
+			<f:websocket channel="exit" onclose="onClose" onopen="onOpen" scope="session" />
 		</h:body>
 	</f:view>
 </html>
